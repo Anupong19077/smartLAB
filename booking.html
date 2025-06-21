@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>จองห้องแล็บและอุปกรณ์ - Smart Lab</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+    <style>
+        body {
+            font-family: 'Kanit', sans-serif;
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <header class="bg-white shadow-sm">
+        <div class="container mx-auto px-6 py-4 flex justify-between items-center">
+            <a href="index.html" class="text-2xl font-bold text-indigo-600">Smart Lab & Management</a>
+            <a href="index.html" class="text-indigo-600 hover:text-indigo-800">&larr; กลับหน้าหลัก</a>
+        </div>
+    </header>
+
+    <main class="container mx-auto px-6 py-12">
+        <div class="max-w-4xl mx-auto bg-white p-8 rounded-xl shadow-lg">
+            <h1 class="text-3xl font-bold text-gray-800 mb-2">แบบฟอร์มขอใช้บริการห้องปฏิบัติการ</h1>
+            <p class="text-gray-500 mb-8">กรุณากรอกข้อมูลให้ครบถ้วนเพื่อส่งคำขอจองห้องและอุปกรณ์</p>
+
+            <form id="booking-form" class="space-y-6">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label for="name" class="block text-sm font-medium text-gray-700 mb-1">ชื่อ-สกุล ผู้ขอเบิก</label>
+                        <input type="text" id="name" name="name" required class="w-full px-4 py-2 border border-gray-300 rounded-lg" placeholder="เช่น นายสมชาย ใจดี" />
+                    </div>
+                    <div>
+                        <label for="subject" class="block text-sm font-medium text-gray-700 mb-1">วิชา/โครงการ</label>
+                        <input type="text" id="subject" name="subject" required class="w-full px-4 py-2 border border-gray-300 rounded-lg" placeholder="เช่น SC101 ปฏิบัติการเคมี 1" />
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label for="date" class="block text-sm font-medium text-gray-700 mb-1">วันที่ต้องการใช้งาน</label>
+                        <input type="date" id="date" name="date" required class="w-full px-4 py-2 border border-gray-300 rounded-lg" />
+                    </div>
+                    <div>
+                        <label for="time" class="block text-sm font-medium text-gray-700 mb-1">ช่วงเวลา</label>
+                        <select id="time" name="time" required class="w-full px-4 py-2 border border-gray-300 rounded-lg">
+                            <option value="">-- เลือกช่วงเวลา --</option>
+                            <option value="09:00-12:00">09:00 - 12:00</option>
+                            <option value="13:00-16:00">13:00 - 16:00</option>
+                            <option value="16:00-19:00">16:00 - 19:00</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">อุปกรณ์ที่ต้องการ (เลือกได้หลายรายการ)</label>
+                    <div id="equipment-list" class="grid grid-cols-2 md:grid-cols-3 gap-4 mt-2 p-4 border border-gray-200 rounded-lg max-h-60 overflow-y-auto">
+                        <p class="text-gray-500">กำลังโหลดรายการอุปกรณ์...</p>
+                    </div>
+                </div>
+
+                <div class="text-right">
+                    <button type="submit" class="bg-indigo-600 text-white font-bold py-3 px-6 rounded-lg hover:bg-indigo-700">ส่งคำขอจอง</button>
+                </div>
+            </form>
+        </div>
+    </main>
+
+    <footer class="bg-white mt-12">
+        <div class="container mx-auto px-6 py-4 text-center text-gray-500">
+            <p>&copy; 2025 Smart Lab & Management. All Rights Reserved.</p>
+        </div>
+    </footer>
+
+    <!-- Firebase SDK & Logic -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-app.js";
+        import { getDatabase, ref, push, set } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-database.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyCccYvtT_EX5wRLmQHb1DpcUgzT7jnUQu4",
+            authDomain: "smartlab-f462e.firebaseapp.com",
+            databaseURL: "https://smartlab-f462e-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "smartlab-f462e",
+            storageBucket: "smartlab-f462e.appspot.com",
+            messagingSenderId: "940970654088",
+            appId: "1:940970654088:web:0676adabcc2e5ce186a23d",
+            measurementId: "G-4X0EJJRER8"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+
+        const equipmentListDiv = document.getElementById('equipment-list');
+        const bookingForm = document.getElementById('booking-form');
+
+        async function fetchEquipment() {
+            const mockEquipment = [
+                { id: 'eq1', name: 'บีกเกอร์ 250ml', quantity: 50, status: 'available' },
+                { id: 'eq2', name: 'กล้องจุลทรรศน์', quantity: 15, status: 'available' },
+                { id: 'eq3', name: 'ชุดไทเทรต', quantity: 20, status: 'available' },
+                { id: 'eq4', name: 'ตะเกียงแอลกอฮอล์', quantity: 30, status: 'available' },
+                { id: 'eq5', name: 'ออสซิลโลสโคป', quantity: 5, status: 'available' },
+                { id: 'eq6', name: 'เครื่องชั่งดิจิทัล', quantity: 10, status: 'maintenance' },
+            ];
+
+            equipmentListDiv.innerHTML = '';
+            mockEquipment.forEach(eq => {
+                if (eq.status === 'available' && eq.quantity > 0) {
+                    const checkboxDiv = document.createElement('div');
+                    checkboxDiv.classList.add('flex', 'items-center');
+                    checkboxDiv.innerHTML = `
+                        <input id="${eq.id}" name="equipment" type="checkbox" value="${eq.name}" class="h-4 w-4 text-indigo-600 border-gray-300 rounded">
+                        <label for="${eq.id}" class="ml-3 block text-sm text-gray-700">${eq.name} (${eq.quantity} ชิ้น)</label>
+                    `;
+                    equipmentListDiv.appendChild(checkboxDiv);
+                }
+            });
+        }
+
+        async function handleBookingSubmit(event) {
+            event.preventDefault();
+
+            const formData = new FormData(bookingForm);
+            const selectedEquipment = Array.from(document.querySelectorAll('input[name="equipment"]:checked')).map(cb => cb.value);
+
+            const bookingData = {
+                name: formData.get('name'),
+                subject: formData.get('subject'),
+                date: formData.get('date'),
+                time: formData.get('time'),
+                equipment: selectedEquipment,
+                status: 'pending',
+                createdAt: new Date().toISOString()
+            };
+
+            if (!bookingData.name || !bookingData.subject || !bookingData.date || !bookingData.time) {
+                alert('กรุณากรอกข้อมูลให้ครบถ้วน');
+                return;
+            }
+
+            try {
+                const bookingRef = push(ref(db, 'bookings'));
+                await set(bookingRef, bookingData);
+                alert('ส่งคำขอสำเร็จ! รอการอนุมัติจากเจ้าหน้าที่');
+                bookingForm.reset();
+            } catch (error) {
+                console.error("Error: ", error);
+                alert('เกิดข้อผิดพลาด กรุณาลองใหม่');
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('date').setAttribute('min', today);
+            fetchEquipment();
+        });
+
+        bookingForm.addEventListener('submit', handleBookingSubmit);
+    </script>
+</body>
+</html>
