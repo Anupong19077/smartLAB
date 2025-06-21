@@ -71,14 +71,14 @@
 
     <footer class="bg-white mt-12">
         <div class="container mx-auto px-6 py-4 text-center text-gray-500">
-            <p>&copy; 2025 Smart Lab & Management. All Rights Reserved.</p>
+            <p>&copy; 2025 Smart Lab &amp; Management. All Rights Reserved.</p>
         </div>
     </footer>
 
     <!-- Firebase SDK & Logic -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-app.js";
-        import { getDatabase, ref, push, set } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-database.js";
+        import { getDatabase, ref, push, set, get, child } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-database.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyCccYvtT_EX5wRLmQHb1DpcUgzT7jnUQu4",
@@ -91,36 +91,53 @@
             measurementId: "G-4X0EJJRER8"
         };
 
+        // Init Firebase
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
 
+        // DOM elements
         const equipmentListDiv = document.getElementById('equipment-list');
         const bookingForm = document.getElementById('booking-form');
 
+        /* --------------------------------- */
+        /* ดึงรายการอุปกรณ์แบบ real‑time จาก Firebase */
+        /* --------------------------------- */
         async function fetchEquipment() {
-            const mockEquipment = [
-                { id: 'eq1', name: 'บีกเกอร์ 250ml', quantity: 50, status: 'available' },
-                { id: 'eq2', name: 'กล้องจุลทรรศน์', quantity: 15, status: 'available' },
-                { id: 'eq3', name: 'ชุดไทเทรต', quantity: 20, status: 'available' },
-                { id: 'eq4', name: 'ตะเกียงแอลกอฮอล์', quantity: 30, status: 'available' },
-                { id: 'eq5', name: 'ออสซิลโลสโคป', quantity: 5, status: 'available' },
-                { id: 'eq6', name: 'เครื่องชั่งดิจิทัล', quantity: 10, status: 'maintenance' },
-            ];
+            try {
+                const equipmentSnap = await get(child(ref(db), 'equipment'));
 
-            equipmentListDiv.innerHTML = '';
-            mockEquipment.forEach(eq => {
-                if (eq.status === 'available' && eq.quantity > 0) {
-                    const checkboxDiv = document.createElement('div');
-                    checkboxDiv.classList.add('flex', 'items-center');
-                    checkboxDiv.innerHTML = `
-                        <input id="${eq.id}" name="equipment" type="checkbox" value="${eq.name}" class="h-4 w-4 text-indigo-600 border-gray-300 rounded">
-                        <label for="${eq.id}" class="ml-3 block text-sm text-gray-700">${eq.name} (${eq.quantity} ชิ้น)</label>
-                    `;
-                    equipmentListDiv.appendChild(checkboxDiv);
+                equipmentListDiv.innerHTML = '';
+
+                if (equipmentSnap.exists()) {
+                    const equipmentObj = equipmentSnap.val();
+
+                    Object.keys(equipmentObj).forEach(key => {
+                        const eq = equipmentObj[key];
+
+                        // แสดงเฉพาะอุปกรณ์ที่ available และมีจำนวนคงเหลือ
+                        if (eq.status === 'available' && eq.quantity > 0) {
+                            const checkboxDiv = document.createElement('div');
+                            checkboxDiv.classList.add('flex', 'items-center');
+                            checkboxDiv.innerHTML = `
+                                <input id="${key}" name="equipment" type="checkbox" value="${eq.name}" class="h-4 w-4 text-indigo-600 border-gray-300 rounded" />
+                                <label for="${key}" class="ml-3 block text-sm text-gray-700">${eq.name} (${eq.quantity} ชิ้น)</label>
+                            `;
+                            equipmentListDiv.appendChild(checkboxDiv);
+                        }
+                    });
+
+                    // กรณีไม่มีอุปกรณ์ที่พร้อมใช้เลย
+                    if (!equipmentListDiv.hasChildNodes()) {
+                        equipmentListDiv.innerHTML = '<p class="text-red-500">ขณะนี้ไม่มีอุปกรณ์ที่พร้อมให้บริการ</p>';
+                    }
+                } else {
+                    equipmentListDiv.innerHTML = '<p class="text-red-500">ไม่พบข้อมูลอุปกรณ์</p>';
                 }
-            });
+            } catch (error) {
+                console.error('Fetch equipment error:', error);
+                equipmentListDiv.innerHTML = '<p class="text-red-500">เกิดข้อผิดพลาดในการดึงข้อมูลอุปกรณ์</p>';
+            }
         }
-
         async function handleBookingSubmit(event) {
             event.preventDefault();
 
