@@ -77,22 +77,25 @@
 
     <!-- Firebase SDK & Logic -->
     <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-app.js";
-        import { getDatabase, ref, push, set, get, child } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-database.js";
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+        import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-analytics.js";
+        import { getDatabase, ref, child, get, push, set } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
+        // Firebase config
         const firebaseConfig = {
-            apiKey: "AIzaSyCccYvtT_EX5wRLmQHb1DpcUgzT7jnUQu4",
-            authDomain: "smartlab-f462e.firebaseapp.com",
-            databaseURL: "https://smartlab-f462e-default-rtdb.asia-southeast1.firebasedatabase.app",
-            projectId: "smartlab-f462e",
-            storageBucket: "smartlab-f462e.appspot.com",
-            messagingSenderId: "940970654088",
-            appId: "1:940970654088:web:0676adabcc2e5ce186a23d",
-            measurementId: "G-4X0EJJRER8"
+            apiKey: "AIzaSyCpmYpb3EQCHVbmD89Ao9ERURAHARoe3w0",
+            authDomain: "smart-lab-8252d.firebaseapp.com",
+            databaseURL: "https://smart-lab-8252d-default-rtdb.asia-southeast1.firebasedatabase.app/",
+            projectId: "smart-lab-8252d",
+            storageBucket: "smart-lab-8252d.appspot.com",
+            messagingSenderId: "467083368769",
+            appId: "1:467083368769:web:29b2e512d15f06161ae9c0",
+            measurementId: "G-WFYR6K03J3"
         };
 
         // Init Firebase
         const app = initializeApp(firebaseConfig);
+        const analytics = getAnalytics(app);
         const db = getDatabase(app);
 
         // DOM elements
