@@ -14,12 +14,14 @@
         body {
             font-family: 'Kanit', sans-serif;
         }
-        /* Simple animation for cards on hover */
         .nav-card:hover {
             transform: translateY(-5px);
             box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
         }
     </style>
+    <!-- Firebase Auth CDN -->
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 </head>
 <body class="bg-gray-100 text-gray-800">
 
@@ -33,7 +35,12 @@
                 </svg>
                 Smart Lab & Management
             </div>
-            <!-- Future login button can go here -->
+            <!-- Auth Tabs -->
+            <nav class="flex items-center space-x-4">
+                <span id="user-email" class="text-indigo-700 font-medium"></span>
+                <a href="login.html" id="login-link" class="text-gray-600 hover:text-indigo-600 font-medium transition">เข้าสู่ระบบ</a>
+                <a href="#" id="logout-link" class="text-gray-600 hover:text-indigo-600 font-medium transition">ออกจากระบบ</a>
+            </nav>
         </div>
     </header>
 
@@ -102,5 +109,38 @@
         </div>
     </footer>
 
+    <script>
+        // Firebase config (ใช้ config ของโปรเจกต์คุณ)
+        const firebaseConfig = {
+            apiKey: "AIzaSyCccYvtT_EX5wRLmQHb1DpcUgzT7jnUQu4",
+            authDomain: "smart-lab-8252d.firebaseapp.com",
+            projectId: "smart-lab-8252d",
+        };
+        firebase.initializeApp(firebaseConfig);
+
+        // Show user email if logged in
+        firebase.auth().onAuthStateChanged(function(user) {
+            const emailSpan = document.getElementById('user-email');
+            const loginLink = document.getElementById('login-link');
+            const logoutLink = document.getElementById('logout-link');
+            if (user && user.email) {
+                emailSpan.textContent = user.email;
+                loginLink.style.display = 'none';
+                logoutLink.style.display = '';
+            } else {
+                emailSpan.textContent = '';
+                loginLink.style.display = '';
+                logoutLink.style.display = 'none';
+            }
+        });
+
+        // Logout handler
+        document.getElementById('logout-link').addEventListener('click', function(e) {
+            e.preventDefault();
+            firebase.auth().signOut().then(function() {
+                window.location.href = "login.html";
+            });
+        });
+    </script>
 </body>
 </html>
