@@ -11,11 +11,11 @@
         body { font-family: 'Kanit', sans-serif; }
         #beakerLiquid { transition: background-color 0.4s ease; }
         .form-select, .form-input {
-            border-color: #d1d5db; /* gray-300 */
+            border-color: #d1d5db;
             transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
         }
         .form-select:focus, .form-input:focus {
-            border-color: #4f46e5; /* indigo-600 */
+            border-color: #4f46e5;
             box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.5);
             outline: none;
         }
@@ -26,32 +26,91 @@
         <div class="container mx-auto px-6 py-4 flex justify-between items-center">
             <a href="index.html" class="text-2xl font-bold text-indigo-600">Smart Lab & Management</a>
             <!-- Back Tab -->
-            <a href="index.html" class="text-indigo-600 hover:text-indigo-800 font-medium transition text-base">&larr; กลับหน้าหลัก</a>
-            <!-- ลบ Auth Tabs ออก -->
+            <a href="simulator.html" class="text-indigo-600 hover:text-indigo-800 font-medium transition text-base">&larr; กลับหน้าหลักแล็ป</a>
+            <!-- Auth Tabs -->
+            <!-- ลบ nav ออก -->
         </div>
     </header>
 
-    <main class="container mx-auto px-6 py-12">
-        <div class="max-w-4xl mx-auto bg-white p-8 rounded-xl shadow-lg">
-            <h1 class="text-3xl font-bold text-gray-800 mb-2">เลือกแล็ปที่ต้องการจำลอง</h1>
-            <p class="text-gray-500 mb-8">เลือกหัวข้อแล็ปเพื่อเข้าสู่หน้าจำลองการทดลองแต่ละประเภท</p>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-                <!-- Card: Titration Lab -->
-                <a href="titration-lab.html" class="nav-card bg-blue-50 rounded-lg shadow p-6 flex flex-col items-center text-center hover:bg-blue-100 transition">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-blue-600 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                    </svg>
-                    <h2 class="text-xl font-semibold mb-2">จำลองการไทเทรตกรด-เบส</h2>
-                    <p class="text-gray-600">ทดลองไทเทรตกรด-เบส พร้อมกราฟและการคำนวณค่า pH</p>
-                </a>
-                <!-- Card: Projectile Lab -->
-                <a href="projectile-lab.html" class="nav-card bg-yellow-50 rounded-lg shadow p-6 flex flex-col items-center text-center hover:bg-yellow-100 transition">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-yellow-600 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-                    </svg>
-                    <h2 class="text-xl font-semibold mb-2">จำลองการเคลื่อนที่โพรเจกไทล์</h2>
-                    <p class="text-gray-600">ทดลองยิงวัตถุในแนวโพรเจกไทล์ ดูกราฟและผลการเคลื่อนที่</p>
-                </a>
+    <main class="container mx-auto px-6 py-10">
+        <div class="max-w-6xl mx-auto bg-white p-6 md:p-8 rounded-xl shadow-lg">
+            <h1 class="text-3xl font-bold text-gray-800 mb-2">จำลองการไทเทรตกรด-เบสขั้นสูง</h1>
+            <p class="text-gray-600 mb-8">เลือกสารเคมี, กำหนดค่า, และสังเกตผลผ่านกราฟไทเทรตโค้งเพื่อความเข้าใจที่ลึกซึ้งยิ่งขึ้น</p>
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <!-- === Setup and Controls Column === -->
+                <div class="lg:col-span-1 space-y-6">
+                    <div class="bg-gray-50 p-4 rounded-lg border">
+                        <h3 class="text-xl font-bold text-indigo-700 mb-4">1. ตั้งค่าการทดลอง</h3>
+                        <!-- Analyte (in beaker) -->
+                        <div class="mb-4">
+                            <label for="analyte" class="block text-sm font-medium text-gray-700">สารในบีกเกอร์ (Analyte)</label>
+                            <select id="analyte" class="mt-1 block w-full py-2 px-3 border rounded-md shadow-sm form-select">
+                                <option value="HCl">กรดไฮโดรคลอริก (HCl)</option>
+                                <option value="CH3COOH">กรดแอซิติก (CH₃COOH)</option>
+                            </select>
+                        </div>
+                        <div class="grid grid-cols-2 gap-2 mb-4">
+                            <div>
+                                <label for="analyteMolarity" class="block text-xs text-gray-600">ความเข้มข้น (M)</label>
+                                <input type="number" id="analyteMolarity" value="0.1" step="0.01" class="mt-1 w-full p-2 border rounded-md form-input">
+                            </div>
+                            <div>
+                                <label for="analyteVolume" class="block text-xs text-gray-600">ปริมาตร (mL)</label>
+                                <input type="number" id="analyteVolume" value="25" step="1" class="mt-1 w-full p-2 border rounded-md form-input">
+                            </div>
+                        </div>
+                        <!-- Titrant (in burette) -->
+                        <div class="mb-4">
+                            <label for="titrant" class="block text-sm font-medium text-gray-700">สารในบิวเรตต์ (Titrant)</label>
+                            <select id="titrant" class="mt-1 block w-full py-2 px-3 border rounded-md shadow-sm form-select">
+                                <option value="NaOH">โซเดียมไฮดรอกไซด์ (NaOH)</option>
+                                <option value="NH3">แอมโมเนีย (NH₃)</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label for="titrantMolarity" class="block text-xs text-gray-600">ความเข้มข้น (M)</label>
+                            <input type="number" id="titrantMolarity" value="0.1" step="0.01" class="mt-1 w-full p-2 border rounded-md form-input">
+                        </div>
+                    </div>
+                    <div class="bg-gray-50 p-4 rounded-lg border">
+                        <h3 class="text-xl font-bold text-indigo-700 mb-4">2. ควบคุมการทดลอง</h3>
+                        <div>
+                            <label for="titrantVolumeSlider" class="block text-sm font-medium text-gray-700">ปริมาตร Titrant ที่เติม (mL)</label>
+                            <div class="flex items-center space-x-3 mt-2">
+                                <input type="range" id="titrantVolumeSlider" min="0" max="50" value="0" step="0.1" class="w-full">
+                                <span id="titrantVolumeValue" class="text-indigo-600 font-bold text-lg w-24 text-center p-2 bg-indigo-50 rounded-md">0.0 mL</span>
+                            </div>
+                        </div>
+                        <button id="resetButton" class="w-full mt-4 bg-red-600 text-white font-bold py-2 px-4 rounded-lg hover:bg-red-700 transition">
+                            รีเซ็ตการทดลอง
+                        </button>
+                    </div>
+                    <div class="bg-gray-50 p-4 rounded-lg border text-center">
+                        <h3 class="text-xl font-bold text-indigo-700">ค่า pH ปัจจุบัน</h3>
+                        <p id="phResult" class="text-5xl font-bold text-blue-600 my-2">1.00</p>
+                        <p id="statusResult" class="font-medium text-blue-600">สารละลายเป็นกรด</p>
+                    </div>
+                </div>
+                <!-- === Visualization Column === -->
+                <div class="lg:col-span-2 space-y-6">
+                    <!-- Lab Visual -->
+                    <div class="relative w-full h-64 flex justify-center items-end bg-gray-100 rounded-lg p-4">
+                        <!-- Burette -->
+                        <div class="absolute top-0 w-8 h-56 bg-gray-200 border-2 border-gray-300 rounded-b-lg" style="clip-path: polygon(0 0, 100% 0, 100% 95%, 50% 100%, 0 95%);">
+                            <div class="absolute top-2 left-0 right-0 text-center text-xs text-gray-600" id="buretteLabel">NaOH</div>
+                        </div>
+                        <!-- Beaker -->
+                        <div class="w-32 h-48 bg-gray-200 border-b-4 border-gray-400 relative" style="clip-path: polygon(0 0, 100% 0, 90% 100%, 10% 100%);">
+                            <div id="beakerLiquid" class="absolute bottom-0 w-full h-3/4 bg-blue-200 bg-opacity-50"></div>
+                            <div class="absolute bottom-2 left-0 right-0 text-center text-xs text-gray-600" id="beakerLabel">HCl</div>
+                        </div>
+                    </div>
+                    <!-- Graph -->
+                    <div class="bg-gray-50 p-4 rounded-lg border">
+                        <h3 class="text-xl font-bold text-indigo-700 mb-2">กราฟไทเทรตโค้ง</h3>
+                        <canvas id="titrationChart"></canvas>
+                    </div>
+                </div>
             </div>
         </div>
     </main>
@@ -121,7 +180,7 @@
             resetButton: document.getElementById('resetButton'),
             chartCanvas: document.getElementById('titrationChart')
         };
-        
+
         let titrationChart;
         let fullTitrationData = [];
 
@@ -146,7 +205,7 @@
                     return 14 + Math.log10(OH);
                 }
             }
-            
+
             // Weak Acid - Strong Base
             if (analyte.type === 'weak_acid' && titrant.type === 'strong_base') {
                 if (Vt === 0) { // Initial state
@@ -155,7 +214,8 @@
                 } else if (addedMolesT < initialMolesA) { // Buffer region
                     const molesA = initialMolesA - addedMolesT;
                     const molesCB = addedMolesT;
-                    return -Math.log10(Ka) + Math.log10(molesCB / molesA);
+                    // Henderson-Hasselbalch
+                    return Math.log10(molesCB / molesA) + Math.log10(1/Ka);
                 } else if (addedMolesT === initialMolesA) { // Equivalence point
                     const concCB = initialMolesA / totalVolume;
                     const Kb_CB = Kw / Ka;
@@ -168,20 +228,22 @@
             }
 
             // Fallback for unsupported combinations (e.g., weak-weak)
-            return NaN; 
+            return NaN;
         }
 
         // --- Simulation Update Function ---
         function updateSimulation() {
             const V_base_added_mL = parseFloat(elements.slider.value);
             elements.volumeDisplay.textContent = `${V_base_added_mL.toFixed(1)} mL`;
-            
-            const currentPoint = fullTitrationData.find(p => p.x >= V_base_added_mL) || fullTitrationData[fullTitrationData.length - 1];
-            if (!currentPoint) return;
-            
-            const pH = currentPoint.y;
-            
-            // Update UI
+
+            const analyte = chemicals[elements.analyteSelect.value];
+            const titrant = chemicals[elements.titrantSelect.value];
+            const Va = parseFloat(elements.analyteVolumeInput.value);
+            const Ma = parseFloat(elements.analyteMolarityInput.value);
+            const Mt = parseFloat(elements.titrantMolarityInput.value);
+
+            const pH = calculatePH(analyte, titrant, Va, Ma, V_base_added_mL, Mt);
+
             elements.phDisplay.textContent = isNaN(pH) ? 'N/A' : pH.toFixed(2);
 
             let statusText = 'Error';
@@ -189,21 +251,21 @@
             let beakerColor = 'rgba(156, 163, 175, 0.4)'; // gray
 
             if (!isNaN(pH)) {
-                 if (pH < 6.8) {
+                if (pH < 6.8) {
                     statusText = 'สารละลายเป็นกรด';
                     colorClass = 'text-blue-600';
                     beakerColor = 'rgba(59, 130, 246, 0.2)';
                 } else if (pH > 7.2) {
                     statusText = 'สารละลายเป็นเบส';
                     colorClass = 'text-pink-600';
-                    if (pH > 8.2) beakerColor = 'rgba(236, 72, 153, 0.4)'; // Phenolphthalein color
+                    if (pH > 8.2) beakerColor = 'rgba(236, 72, 153, 0.4)';
                 } else {
                     statusText = 'ใกล้จุดสมมูล';
                     colorClass = 'text-green-600';
-                     beakerColor = 'rgba(22, 163, 74, 0.3)';
+                    beakerColor = 'rgba(22, 163, 74, 0.3)';
                 }
             }
-            
+
             elements.statusDisplay.textContent = statusText;
             elements.phDisplay.className = `text-5xl font-bold my-2 ${colorClass}`;
             elements.statusDisplay.className = `font-medium ${colorClass}`;
@@ -230,7 +292,7 @@
                     fullTitrationData.push({ x: vt, y: pH });
                 }
             }
-            
+
             renderChart();
             updateSimulation();
         }
@@ -281,7 +343,7 @@
                 }
             });
         }
-        
+
         function updateChartHighlight(volume) {
             if (titrationChart) {
                 const currentPoint = fullTitrationData.find(p => p.x >= volume) || fullTitrationData[fullTitrationData.length - 1];
@@ -310,76 +372,6 @@
 
         // --- Initial Run ---
         document.addEventListener('DOMContentLoaded', setupAndRunFullTitration);
-    </script>
-    <script>
-        // ===== Projectile Motion Simulation =====
-    const projAngleInput = document.getElementById('proj-angle');
-    const projVelocityInput = document.getElementById('proj-velocity');
-    const projBtn = document.getElementById('proj-sim-btn');
-    const projCanvas = document.getElementById('proj-canvas');
-    const projResult = document.getElementById('proj-result');
-
-    function drawProjectile(angleDeg, velocity) {
-        const ctx = projCanvas.getContext('2d');
-        ctx.clearRect(0, 0, projCanvas.width, projCanvas.height);
-
-        // Physics
-        const g = 9.81;
-        const angleRad = angleDeg * Math.PI / 180;
-        const t_flight = (2 * velocity * Math.sin(angleRad)) / g;
-        const range = velocity * Math.cos(angleRad) * t_flight;
-        const maxH = (velocity * Math.sin(angleRad)) ** 2 / (2 * g);
-
-        // Scale for canvas
-        const margin = 20;
-        const scaleX = (projCanvas.width - margin * 2) / range;
-        const scaleY = (projCanvas.height - margin * 2) / maxH;
-
-        ctx.beginPath();
-        ctx.moveTo(margin, projCanvas.height - margin);
-        for (let t = 0; t <= t_flight; t += t_flight / 100) {
-            const x = velocity * Math.cos(angleRad) * t;
-            const y = velocity * Math.sin(angleRad) * t - 0.5 * g * t * t;
-            ctx.lineTo(margin + x * scaleX, projCanvas.height - margin - y * scaleY);
-        }
-        ctx.strokeStyle = "#4f46e5";
-        ctx.lineWidth = 2;
-        ctx.stroke();
-
-        // Draw ground
-        ctx.beginPath();
-        ctx.moveTo(margin, projCanvas.height - margin);
-        ctx.lineTo(projCanvas.width - margin, projCanvas.height - margin);
-        ctx.strokeStyle = "#aaa";
-        ctx.lineWidth = 1;
-        ctx.stroke();
-
-        // Draw start point
-        ctx.beginPath();
-        ctx.arc(margin, projCanvas.height - margin, 4, 0, 2 * Math.PI);
-        ctx.fillStyle = "#db2777";
-        ctx.fill();
-
-        // Show result
-        projResult.innerHTML = `
-            <b>ระยะทางไกลสุด:</b> ${range.toFixed(2)} m<br>
-            <b>เวลาที่อยู่ในอากาศ:</b> ${t_flight.toFixed(2)} s<br>
-            <b>ความสูงสูงสุด:</b> ${maxH.toFixed(2)} m
-        `;
-    }
-
-    projBtn.addEventListener('click', () => {
-        const angle = parseFloat(projAngleInput.value);
-        const velocity = parseFloat(projVelocityInput.value);
-        if (isNaN(angle) || isNaN(velocity) || angle < 0 || angle > 90 || velocity <= 0) {
-            projResult.innerHTML = '<span class="text-red-600">กรุณากรอกค่าที่ถูกต้อง</span>';
-            return;
-        }
-        drawProjectile(angle, velocity);
-    });
-
-    // Optional: draw default on load
-    drawProjectile(45, 20);
     </script>
 </body>
 </html>

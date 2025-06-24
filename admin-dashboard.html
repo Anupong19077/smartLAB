@@ -20,9 +20,9 @@
   <body class="bg-gray-100">
     <header class="bg-white shadow-sm">
       <div class="container mx-auto px-6 py-4 flex justify-between items-center">
-        <a href="index.html" class="text-2xl font-bold text-indigo-600"
-          >Smart Lab - แดชบอร์ดผู้ดูแล</a
-        >
+        <!-- เปลี่ยนจากลิงก์ไป index.html เป็น # และปิด pointer -->
+        <span class="text-2xl font-bold text-indigo-600 select-none cursor-default"
+          >Smart Lab - แดชบอร์ดผู้ดูแล</span>
         <!-- Auth Tabs -->
         <nav class="flex items-center space-x-4">
           <span id="user-email" class="text-indigo-700 font-medium"></span>
@@ -196,7 +196,6 @@
       onAuthStateChanged(auth, async (user) => {
         updateAuthTabs(user);
         if (!user) {
-          // ยังไม่ได้เข้าสู่ระบบ
           window.location.href = "index.html";
           return;
         }
@@ -205,10 +204,29 @@
         const userRef = ref(db, `users/${uid}`);
         const snapshot = await get(userRef);
 
+        // ถ้าไม่ใช่ครู redirect ออก
         if (!snapshot.exists() || snapshot.val().role !== "teacher") {
-          // ไม่ใช่ครู หรือไม่มี role
           alert("คุณไม่มีสิทธิ์เข้าถึงหน้านี้");
           window.location.href = "index.html";
+        } else {
+          // ถ้าเป็นครู ให้ป้องกันการออกจากแดชบอร์ด
+          // ป้องกันการออกจากหน้านี้ (เช่น กด back หรือเปลี่ยน url)
+          history.pushState(null, "", window.location.href);
+          window.addEventListener("popstate", function (event) {
+            history.pushState(null, "", window.location.href);
+          });
+
+          // ป้องกันการคลิก link ไปหน้าอื่น (ยกเว้น logout)
+          document.querySelectorAll("a[href]").forEach(a => {
+            if (
+              !a.id ||
+              (a.id !== "logout-link" && a.id !== "login-link")
+            ) {
+              a.addEventListener("click", function (e) {
+                e.preventDefault();
+              });
+            }
+          });
         }
       });
 
