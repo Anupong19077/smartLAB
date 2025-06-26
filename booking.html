@@ -136,7 +136,7 @@
         /* --------------------------------- */
         async function fetchEquipment() {
             try {
-                const equipmentSnap = await get(child(ref(db), 'equipment'));
+                const equipmentSnap = await get(child(ref(db), 'equipments'));
 
                 equipmentListDiv.innerHTML = '';
 
